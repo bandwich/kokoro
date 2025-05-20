@@ -183,7 +183,10 @@ async function parseVoiceFormula(formula, numTokens) {
   Promise.all(voices).then(async (voiceTuple) => {
     const tensors = voiceTuple.map(tuple => tuple[0]);
     const weights = voiceTuple.map(tuple => tuple[1]);
-    return blendTensorsWeighted(tensors, weights).data()
+    const blended = await blendTensorsWeighted(tensors, weights).data()
+    console.log(`blended:`)
+    console.log(blended)
+    return blended
   })
   return null
 }
