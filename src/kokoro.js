@@ -186,7 +186,7 @@ async function parseVoiceFormula(formula, numTokens) {
     const blended = await blendTensorsWeighted(tensors, weights).data()
     console.log(`blended:`)
     console.log(blended)
-    return blended
+    return new Float32Array(blended)
   })
   return null
 }
