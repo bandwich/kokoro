@@ -1,24 +1,19 @@
-# Kokoro TTS
+### Kokoro TTS
 
-<p align="center">
-    <a href="https://www.npmjs.com/package/kokoro-js"><img alt="NPM" src="https://img.shields.io/npm/v/kokoro-js"></a>
-    <a href="https://www.npmjs.com/package/kokoro-js"><img alt="NPM Downloads" src="https://img.shields.io/npm/dw/kokoro-js"></a>
-    <a href="https://www.jsdelivr.com/package/npm/kokoro-js"><img alt="jsDelivr Hits" src="https://img.shields.io/jsdelivr/npm/hw/kokoro-js"></a>
-    <a href="https://github.com/hexgrad/kokoro/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/hexgrad/kokoro?color=blue"></a>
-    <a href="https://huggingface.co/spaces/webml-community/kokoro-webgpu"><img alt="Demo" src="https://img.shields.io/badge/Hugging_Face-demo-green"></a>
-</p>
+### Fork of kokoro-js only: added support for voice blending
+Library is located in build/
 
 Kokoro is a frontier TTS model for its size of 82 million parameters (text in/audio out). This JavaScript library allows the model to be run 100% locally in the browser thanks to [🤗 Transformers.js](https://huggingface.co/docs/transformers.js). Try it out using our [online demo](https://huggingface.co/spaces/webml-community/kokoro-webgpu)!
 
 ## Usage
 
-First, install the `kokoro-js` library from [NPM](https://npmjs.com/package/kokoro-js) using:
+Install as a package dependency:
 
-```bash
-npm i kokoro-js
+```js
+"kokoro-js": "https://github.com/bandwich/kokoro.git#main"
 ```
 
-You can then generate speech as follows:
+Blended speech:
 
 ```js
 import { KokoroTTS } from "kokoro-js";
@@ -32,7 +27,7 @@ const tts = await KokoroTTS.from_pretrained(model_id, {
 const text = "Life is like a box of chocolates. You never know what you're gonna get.";
 const audio = await tts.generate(text, {
   // Use `tts.list_voices()` to list all available voices
-  voice: "af_heart",
+  voice: "1*af_sky + 4*af_bella"
 });
 audio.save("audio.wav");
 ```

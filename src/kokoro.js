@@ -153,8 +153,8 @@ export class KokoroTTS {
 
 
 /**
- * Parse a voice formula string and return the combined voice tensor.
- * Format: "0.3*af_heart + 0.7*af_bella"
+ * Parse voice formula string, return the combined voice tensor
+ * Format examples: "0.3*af_heart + 0.7*af_bella", "1*am_michael, 3*af_nicole"
  * @param {string} formula - Voice formula string
  * @param {number} numTokens - Number of tokens to determine slice offset
  * @returns {Promise<Float32Array>} - Blended voice tensor
@@ -188,8 +188,8 @@ async function parseVoiceFormula(formula, numTokens) {
     async (voiceTuple) => {
       const tensors = voiceTuple.map(tuple => tuple[0]);
       const weights = voiceTuple.map(tuple => tuple[1]);
-      const blended = await blendTensorsWeighted(tensors, weights).data()
-      return new Float32Array(blended)
+      const blended = await blendTensorsWeighted(tensors, weights).data();
+      return new Float32Array(blended);
     },
     () => { return null; }
   )
@@ -214,23 +214,20 @@ function blendTensorsWeighted(tensors, weights) {
     const weightSum = weightsTensor.sum();
     const normalizedWeights = weightsTensor.div(weightSum);
     
-    // Stack tensors - shape will be [numTensors, ...tensorDimensions]
+    // Stack tensors - shape: [numTensors, ...tensorDimensions]
     const stacked = stack(tensors);
     
-    // Get original tensor shape to determine reshape pattern
+    // original tensor shape to determine reshape pattern
     const stackedShape = stacked.shape;
     
     // Create reshape dimensions for broadcasting
-    // We'll add a 1 for each dimension of the original tensor
+    // add 1 for each dimension of original tensor
     const broadcastShape = [stackedShape[0]];
     for (let i = 1; i < stackedShape.length; i++) {
       broadcastShape.push(1);
     }
     
-    // Reshape weights for broadcasting
-    const reshapedWeights = normalizedWeights.reshape(broadcastShape);
-    
-    // Apply weights
+    const reshapedWeights = normalizedWeights.reshape(broadcastShape)
     const weighted = stacked.mul(reshapedWeights);
     
     // Sum along the first dimension
