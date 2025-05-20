@@ -95,8 +95,6 @@ export class KokoroTTS {
 
     // Load voice style
     const data = await getBlendedVoiceData(voice, num_tokens);
-    console.log("DATA")
-    console.log(data)
 
     // Prepare model inputs
     const inputs = {
@@ -181,14 +179,18 @@ async function parseVoiceFormula(formula, numTokens) {
     // Get the voice tensor
     const voiceData = await getVoiceData(voiceName);
     return [voiceData.slice(offset, offset + STYLE_DIM), weight];
+
   })
-  Promise.all(voices).then(async (voiceTuple) => {
-    const tensors = voiceTuple.map(tuple => tuple[0]);
-    const weights = voiceTuple.map(tuple => tuple[1]);
-    const blended = await blendTensorsWeighted(tensors, weights).data()
-    return new Float32Array(blended)
-  })
-  return null
+  const blend = await Promise.all(voices).then(
+    async (voiceTuple) => {
+      const tensors = voiceTuple.map(tuple => tuple[0]);
+      const weights = voiceTuple.map(tuple => tuple[1]);
+      const blended = await blendTensorsWeighted(tensors, weights).data()
+      return new Float32Array(blended)
+    },
+    () => { return null; }
+  )
+  return blend;
 }
 
 function blendTensorsWeighted(tensors, weights) {
