@@ -165,7 +165,6 @@ async function parseVoiceFormula(formula, numTokens) {
   const terms = formula.trim().split('+');
   
   // Initialize weighted sum
-  let weightedSum = null;
   const offset = numTokens * STYLE_DIM;
   
   const voices = terms.map(async term => {
@@ -181,7 +180,9 @@ async function parseVoiceFormula(formula, numTokens) {
     const voiceData = await getVoiceData(voiceName);
     return [voiceData.slice(offset, offset + STYLE_DIM), weight];
   })
-  Promise.all(voices).then(async ([tensors, weights]) => {
+  Promise.all(voices).then(async (voiceTuple) => {
+    const tensors = voiceTuple.map(tuple => tuple[0]);
+    const weights = voiceTuple.map(tuple => tuple[1]);
     return blendTensorsWeighted(tensors, weights).data()
   })
   return null
